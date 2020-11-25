@@ -4,13 +4,15 @@
 # grep -E -o "PlexOnlineToken=.{0,22}" /var/lib/plexmediaserver/Library/Application\ Support/Plex\ Media\ Server/Preferences.xml
 
 #!/usr/bin/env python3
+import sys
 import requests
 import sqlite3
 
-conn = sqlite3.connect('/var/lib/plexmediaserver/Library/Application Support/Plex Media Server/Plug-in Support/Databases/com.plexapp.plugins.library.db')
+folder=sys.argv[1]
+conn = sqlite3.connect('/opt/plex/Library/Application Support/Plex Media Server/Plug-in Support/Databases/com.plexapp.plugins.library.db')
 
 c = conn.cursor()
-c.execute('select metadata_item_id from media_items where bitrate is null')
+c.execute('select media_items.metadata_item_id from media_items Inner Join media_parts On media_parts.media_item_id=media_items.id where media_itemsbitrate is null AND media_parts.file LIKE '%folder%'')
 items = c.fetchall()
 conn.close()
 
